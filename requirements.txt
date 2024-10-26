@@ -1,3 +1,3 @@
-# Editable install with no version control (ppm==0.1)
+# Editable Git install with no remote (ppm==0.1)
 -e c:\code\python\ppm
 setuptools==75.2.0
