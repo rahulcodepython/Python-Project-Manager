@@ -1,7 +1,8 @@
-import os
-import sys
 import subprocess
+import threading
 import time
+import sys
+import os
 import re
 
 
@@ -27,6 +28,29 @@ class Init():
             self.virtual_environment_name, "Scripts", "activate") if os.name == "nt" else os.path.join(self.virtual_environment_name, "bin", "activate")
         self.packages: list[str] = ['django', 'requests']
         self.package_dependency: dict = {}
+        self.stop_event = threading.Event()
+        self.animation_thread = None
+
+    def loading_animation(self, msg: str) -> None:
+        while not self.stop_event.is_set():
+            for frame in ["   ", ".  ", ".. ", "...", ".. ", ".  "]:
+                print(f"\r{msg} {frame}", end="")
+                time.sleep(0.3)
+
+    def start_animation(self, message: str):
+        if self.animation_thread and self.animation_thread.is_alive():
+            self.stop_animation()
+
+        self.stop_event.clear()
+        self.animation_thread = threading.Thread(
+            target=self.loading_animation, args=(message,))
+        self.animation_thread.start()
+
+    def stop_animation(self):
+        if self.animation_thread:
+            self.stop_event.set()
+            self.animation_thread.join()
+            self.animation_thread = None
 
     def parse_package_name(self) -> None:
         for index, package_name in enumerate(self.packages):
@@ -86,17 +110,24 @@ class Init():
         self.package_dependency.update(package_dependency)
 
     def check_dependencies(self, dry_run_script) -> None:
-        print("Checking dependencies...\n")
+        self.start_animation("Checking dependencies")
         checking_dependencies_stdout_result = subprocess.run(
             dry_run_script, shell=True, capture_output=True, text=True)
-        self.parse_dependencies_stdout_and_prepare_package_dependency_dictionary(
-            checking_dependencies_stdout_result.stdout) if checking_dependencies_stdout_result.returncode == 0 else print("Failed to retrieve dependencies. Check for errors.")
+        if checking_dependencies_stdout_result.returncode == 0:
+            self.parse_dependencies_stdout_and_prepare_package_dependency_dictionary(
+                checking_dependencies_stdout_result.stdout)
+            self.stop_animation()
+            print("\nDependencies checked.\n")
+        else:
+            self.stop_animation()
+            print("Failed to retrieve dependencies. Check for errors.")
 
     def install_packages(self, script) -> None:
-        print("Installing packages...\n")
+        self.start_animation("Installing packages")
         subprocess.run(
             script, shell=True, capture_output=True, text=True)
-        print("All packages installed.\n")
+        self.stop_animation()
+        print("\nAll packages installed.\n")
 
     def check_dependencies_and_install_packages(self) -> None:
         self.parse_package_name()
@@ -178,50 +209,53 @@ It only covers the most common items and meta data of the project.
                     with open(self.environment_variable_name, "w") as file:
                         file.write("")
                     print(
-                        f"\n{self.environment_variable_name} file is overwritten.")
+                        f"\n{self.environment_variable_name} file is overwritten.\n")
 
                 else:
                     print(
-                        f"\n{self.environment_variable_name} file is untouched.")
+                        f"\n{self.environment_variable_name} file is untouched.\n")
 
             else:
                 with open(self.environment_variable_name, "w") as file:
                     file.write("")
-                print(f"\n{self.environment_variable_name} file is created.")
+                print(f"\n{self.environment_variable_name} file is created.\n")
 
     def create_project_folder_files(self) -> None:
+        self.start_animation("Creating src folder and main.py file")
         if not os.path.exists("src"):
             os.makedirs("src")
-        else:
-            print("\nsrc folder already exists.")
 
         with open("src/main.py", "w") as file:
             file.write("""from dotenv import load_dotenv
 import os
-                        
-load_dotenv()
                     
+load_dotenv()
+                
 # to use environment variables
 # os.getenv('ENV_VARIABLE_NAME')
-                    
+                
 def main() -> None:
     print('Hello, World!')
-                    
+                
 if __name__ == '__main__':
     main()
 """)
-        print("\nsrc folder created.")
+        self.stop_animation()
+        print("\nsrc folder created. \n")
 
     def create_virtualenv(self) -> None:
+        self.start_animation("Creating virtual environment")
         if not os.path.exists(self.virtual_environment_name):
-            print("\nCreating virtual environment...")
             subprocess.run([sys.executable, "-m", "venv",
-                           self.virtual_environment_name])
+                            self.virtual_environment_name])
+            self.stop_animation()
             print("\nVirtual environment created.\n")
         else:
+            self.stop_animation()
             print("\nVirtual environment already exists.\n")
 
     def create_ppm_toml(self) -> None:
+        self.start_animation(f"Creating {self.meta_data_file_name} file")
         file_content: str = f"""[project]
 name = "{self.project_name}"
 version = "{self.version}"
@@ -259,9 +293,12 @@ run = "python {self.entry_point_path}"
         with open(self.meta_data_file_name, "w") as file:
             file.write(file_content)
 
+        self.stop_animation()
+
         print(f"\n{self.current_working_directory}\\{
             self.meta_data_file_name} created.")
-        print("This python project is built on python version", self.python_version)
+        print("\nThis python project is built on python version",
+              self.python_version)
         print("\nCongratulations! Your project is ready to go.")
         print("\nTo install the dependencies, use the command 'ppm install'")
         print("To run the project, use the command 'ppm run'")
