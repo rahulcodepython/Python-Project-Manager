@@ -1,3 +1,4 @@
+import argparse
 import subprocess
 import threading
 import time
@@ -315,3 +316,19 @@ run = "python {self.entry_point_path}"
         self.create_virtualenv()
         self.check_dependencies_and_install_packages()
         self.create_ppm_toml()
+
+
+def main():
+    parser = argparse.ArgumentParser(prog="ppm")
+    subparsers = parser.add_subparsers(dest="command")
+
+    init_parser = subparsers.add_parser(
+        "init", help="Initializes a new project")
+    init_parser.set_defaults(func=Init().init)
+
+    args = parser.parse_args()
+
+    if args.command:
+        args.func()
+    else:
+        parser.print_help()

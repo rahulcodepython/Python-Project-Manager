@@ -1,2 +1,2 @@
 [console_scripts]
-ppm = main:main
+ppm = ppm3:main
