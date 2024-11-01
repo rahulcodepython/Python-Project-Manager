@@ -1,6 +1,17 @@
 Metadata-Version: 2.1
 Name: ppm3
 Version: 0.0.1
+Summary: A Python package manager.
+Home-page: https://github.com/rahulcodepython/Python-Project-Manager.git
+Author: Rahul Das
+Author-email: rahulcodepython@gmail.com
+Project-URL: Bug Tracker, https://github.com/rahulcodepython/Python-Project-Manager/issues
+Project-URL: Source Code, https://github.com/rahulcodepython/Python-Project-Manager
+Keywords: ppm,package manager,python package,python project manager
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
 Requires-Dist: ansicon==1.89.0
 Requires-Dist: blessed==1.20.0
 Requires-Dist: editor==1.6.6
@@ -8,7 +19,10 @@ Requires-Dist: inquirer==3.4.0
 Requires-Dist: jinxed==1.3.0
 Requires-Dist: readchar==4.2.0
 Requires-Dist: runs==1.2.2
-Requires-Dist: setuptools==75.2.0
+Requires-Dist: setuptools==75.3.0
 Requires-Dist: six==1.16.0
 Requires-Dist: wcwidth==0.2.13
 Requires-Dist: xmod==1.8.1
+Requires-Dist: pipdeptree==2.23.4
+
+A Python package manager.

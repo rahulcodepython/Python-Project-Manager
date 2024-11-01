@@ -30,7 +30,7 @@ setup(
         "jinxed == 1.3.0",
         "readchar == 4.2.0",
         "runs == 1.2.2",
-        "setuptools == 75.2.0",
+        "setuptools == 75.3.0",
         "six == 1.16.0",
         "wcwidth == 0.2.13",
         "xmod == 1.8.1",
