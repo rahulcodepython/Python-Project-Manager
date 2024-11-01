@@ -1,6 +1,7 @@
 import argparse
 import subprocess
 import threading
+import inquirer
 import time
 import sys
 import os
@@ -20,14 +21,14 @@ class Init():
         self.git_repository: str = ""
         self.author: str = ""
         self.license: str = "ISC"
-        self.agree_to_create_env_file: str = "yes"
+        self.agree_to_create_env_file: bool = True
         self.python_version: str = sys.version.split(" ")[0]
         self.meta_data_file_name: str = "ppm.toml"
         self.virtual_environment_name: str = ".venv"
         self.environment_variable_name: str = ".env"
         self.virtual_environment_activate_script = os.path.join(
             self.virtual_environment_name, "Scripts", "activate") if os.name == "nt" else os.path.join(self.virtual_environment_name, "bin", "activate")
-        self.packages: list[str] = ['django', 'requests']
+        self.packages: list[str] = ['python-dotenv']
         self.package_dependency: dict = {}
         self.stop_event = threading.Event()
         self.animation_thread = None
@@ -135,10 +136,9 @@ class Init():
 
         dry_run_script: str = self.virtual_environment_activate_script + \
             " && pip install --no-cache-dir --dry-run " + \
-            "python-dotenv " + " ".join(self.packages)
+            " ".join(self.packages)
         script: str = self.virtual_environment_activate_script + \
-            " && pip install --no-cache-dir " + \
-            "python-dotenv " + " ".join(self.packages)
+            " && pip install --no-cache-dir " + " ".join(self.packages)
 
         self.check_dependencies(dry_run_script)
 
@@ -160,6 +160,18 @@ class Init():
         except KeyboardInterrupt:
             print("\nOperation is terminated.")
             sys.exit(0)
+
+    def ask_yes_no_question(self, question: str) -> bool:
+        question = [
+            inquirer.List(
+                'choice',
+                message=question,
+                choices=['Yes', 'No'],
+                carousel=True  # Allows navigation through choices in a loop
+            )
+        ]
+        answer = inquirer.prompt(question)
+        return True if answer['choice'] == 'Yes' else False
 
     def get_user_input(self) -> None:
         print(f"""
@@ -187,26 +199,24 @@ It only covers the most common items and meta data of the project.
         self.get_user_input_for_package()
 
         # Confirm and show details
-        print(f"\nAbout to write to {
-              self.current_working_directory}\\{self.meta_data_file_name}:")
-        agree_to_create_ppm_toml = self.valided_user_input(
-            "Is this ok?", "yes")
-        if agree_to_create_ppm_toml.lower() != "yes" and agree_to_create_ppm_toml.lower() != "y":
+        print(f"\nAbout to write to " + self.current_working_directory +
+              "\\" + self.meta_data_file_name + ":")
+        agree_to_create_ppm_toml: bool = self.ask_yes_no_question(
+            "Is this ok?")
+        if not agree_to_create_ppm_toml:
             print("\nOperation is terminated.")
             sys.exit(0)
 
     def create_env_file(self) -> None:
-        self.agree_to_create_env_file = self.valided_user_input(
-            f"Are you sure you want to add {self.environment_variable_name} file?", self.agree_to_create_env_file)
+        self.agree_to_create_env_file: bool = self.ask_yes_no_question(
+            f"Are you sure you want to add {self.environment_variable_name} file?")
 
-        if self.agree_to_create_env_file.lower() == "yes" or self.agree_to_create_env_file.lower() == "y":
-            self.agree_to_create_env_file = "y"
-
+        if self.agree_to_create_env_file:
             if os.path.isfile(self.environment_variable_name):
-                override_env_file = self.valided_user_input(
-                    f"{self.environment_variable_name} file already exists. Do you want to override it?", "no")
+                override_env_file: bool = self.ask_yes_no_question(
+                    f"{self.environment_variable_name} file already exists. Do you want to override it?")
 
-                if override_env_file.lower() == "yes" or override_env_file.lower() == "y":
+                if override_env_file:
                     with open(self.environment_variable_name, "w") as file:
                         file.write("")
                     print(
@@ -276,7 +286,7 @@ path = "{self.virtual_environment_activate_script}"
 
 
 [environment_variables]"""
-        if self.agree_to_create_env_file == "y":
+        if self.agree_to_create_env_file:
             file_content += """ path = "./env" """
 
         file_content += f"""\n\n
@@ -296,8 +306,8 @@ run = "python {self.entry_point_path}"
 
         self.stop_animation()
 
-        print(f"\n{self.current_working_directory}\\{
-            self.meta_data_file_name} created.")
+        print(f"\n" + self.current_working_directory +
+              "\\" + self.meta_data_file_name + " created.")
         print("\nThis python project is built on python version",
               self.python_version)
         print("\nCongratulations! Your project is ready to go.")

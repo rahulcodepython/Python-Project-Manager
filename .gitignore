@@ -4,3 +4,5 @@ system
 /ppm3/.pypirc
 /ppm3/build
 /ppm3/dist
+.env
+main.py
