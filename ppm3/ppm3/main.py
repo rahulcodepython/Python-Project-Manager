@@ -1,5 +1,5 @@
 import argparse
-from .src.init import Init
+from .src import Init
 
 
 def main():

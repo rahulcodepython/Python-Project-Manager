@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="ppm3",
-    version="0.0.1",
+    version="0.0.2",
     author="Rahul Das",
     author_email="rahulcodepython@gmail.com",
     description="A Python package manager.",
@@ -41,3 +41,6 @@ setup(
         ],
     },
 )
+
+# To build the package, run the following command:
+# python setup.py sdist bdist_wheel
