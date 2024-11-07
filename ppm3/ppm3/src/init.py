@@ -1,5 +1,6 @@
 import subprocess
 import threading
+import platform
 import inquirer
 import time
 import sys
@@ -9,6 +10,7 @@ import json
 
 class Init():
     def __init__(self) -> None:
+        self.use_as_project_manager = True
         self.current_working_directory: str = os.getcwd()
         self.current_folder_name: str = os.path.basename(
             self.current_working_directory)
@@ -25,12 +27,22 @@ class Init():
         self.meta_data_file_name: str = "ppm.toml"
         self.virtual_environment_name: str = ".venv"
         self.environment_variable_name: str = ".env"
-        self.virtual_environment_activate_script = os.path.join(
+        self.virtual_environment_activate_path = os.path.join(
             self.virtual_environment_name, "Scripts", "activate") if os.name == "nt" else os.path.join(self.virtual_environment_name, "bin", "activate")
         self.packages: list[str] = []
         self.package_dependency: dict = {}
         self.stop_event = threading.Event()
         self.animation_thread = None
+
+    def build_script(self, script: list[str]) -> str:
+        if platform.system() == "Windows":
+            return f"{self.virtual_environment_activate_path} ; " + " ; ".join(script)
+        else:
+            shell = os.getenv("SHELL", "/bin/bash")
+            if "zsh" in shell:
+                return f"zsh -c 'source {self.virtual_environment_activate_path} && " + " && ".join(script) + "'"
+            else:
+                return f"bash -c 'source {self.virtual_environment_activate_path} && " + " && ".join(script) + "'"
 
     def loading_animation(self, msg: str) -> None:
         while not self.stop_event.is_set():
@@ -90,18 +102,19 @@ It only covers the most common items and meta data of the project.
         print("Press ^C at any time to quit.")
         print("Press Enter to use the default value. \n")
 
-        self.project_name = self.valided_user_input(
-            "project name", self.project_name)
-        self.version = self.valided_user_input("version", self.version)
-        self.description = self.valided_user_input(
-            "description", self.description)
-        self.entry_point = self.valided_user_input(
-            "entry point", self.entry_point)
-        self.git_repository = self.valided_user_input(
-            "git repository", self.git_repository)
-        self.author = self.valided_user_input("author", self.author)
-        self.license = self.valided_user_input("license", self.license)
-        self.entry_point_path += self.entry_point
+        if self.use_as_project_manager:
+            self.project_name = self.valided_user_input(
+                "project name", self.project_name)
+            self.version = self.valided_user_input("version", self.version)
+            self.description = self.valided_user_input(
+                "description", self.description)
+            self.entry_point = self.valided_user_input(
+                "entry point", self.entry_point)
+            self.git_repository = self.valided_user_input(
+                "git repository", self.git_repository)
+            self.author = self.valided_user_input("author", self.author)
+            self.license = self.valided_user_input("license", self.license)
+            self.entry_point_path += self.entry_point
 
         print("\nAdd the packages you want to install in the project.")
         print("Enter the package name like (<package_name>==<version>) or (<package_name>) to install spacific version or latest version.")
@@ -189,10 +202,15 @@ if __name__ == '__main__':
         self.packages.append("python-dotenv")
         self.packages.append("pipdeptree")
 
-        script: str = self.virtual_environment_activate_script + \
-            " && pip install --no-cache-dir " + " ".join(self.packages)
-        subprocess.run(
+        script: str = self.build_script(
+            ["pip install --no-cache-dir " + " ".join(self.packages)])
+        result = subprocess.run(
             script, shell=True, capture_output=True, text=True)
+
+        if result.returncode != 0:
+            print("An error occurred while checking packages. Please try again.")
+            print(f"Error message is {result.stderr}")
+            sys.exit(0)
 
         self.stop_animation()
         print("\nAll packages installed.\n")
@@ -230,13 +248,16 @@ if __name__ == '__main__':
 
     def parse_installed_package_dependency(self) -> None:
         self.start_animation("Checking packages")
-        script: str = self.virtual_environment_activate_script + \
-            " && pipdeptree --json"
+        script: str = self.build_script(["pipdeptree --json"])
         result = subprocess.run(
             script, shell=True, capture_output=True, text=True)
 
         if result.returncode == 0:
             self.format_package_dependency(result)
+        else:
+            print("An error occurred while checking packages. Please try again.")
+            print(f"Error message is {result.stderr}")
+            sys.exit(0)
 
         self.stop_animation()
         print("\nAll packages checked.\n")
@@ -262,7 +283,8 @@ if __name__ == '__main__':
 
     def create_ppm_toml(self) -> None:
         self.start_animation(f"Creating {self.meta_data_file_name} file")
-        file_content: str = f"""[project]
+        file_content: str = """"""
+        file_content += f"""[project]
 name = "{self.project_name}"
 version = "{self.version}"
 description = "{self.description}"
@@ -270,14 +292,15 @@ entry_point = "{self.entry_point}"
 git_repository = "{self.git_repository}"
 author = "{self.author}"
 license = "{self.license}"
+""" if self.use_as_project_manager else """"""
 
-
+        file_content += f"""
 [python]
 python_version = "{self.python_version}"
 
 
 [environment]
-path = "{self.virtual_environment_activate_script}"
+path = "{self.virtual_environment_activate_path}"
 
 
 [environment_variables]"""
@@ -287,10 +310,10 @@ path = "{self.virtual_environment_activate_script}"
         file_content += f"""\n\n
 [command]
 run = "python {self.entry_point_path}"
+""" if self.use_as_project_manager else """"""
 
+        file_content += f"""\n\n"""
 
-[dependencies]
-"""
         formated_dependencies = self.format_dependencies()
         file_content += formated_dependencies
 
@@ -305,17 +328,35 @@ run = "python {self.entry_point_path}"
               self.python_version)
         print("\nCongratulations! Your project is ready to go.")
         print("\nTo install the dependencies, use the command 'ppm install'")
-        print("To run the project, use the command 'ppm run'")
-        print("To activate the virtual environment, use the command 'ppm activate'")
-        print("To deactivate the virtual environment, use the command 'ppm deactivate'")
-        print(f"\nmain.py file is created in src folder ({
-            self.entry_point_path}). You can start coding in main.py file.")
+
+        if self.use_as_project_manager:
+            print("To run the project, use the command 'ppm run'")
+            print(f"\nmain.py file is created in src folder ({
+                self.entry_point_path}). You can start coding in main.py file.")
         print("\nHappy coding!")
 
+    def identify_ppm_usage(self) -> None:
+        question = [
+            inquirer.List(
+                'choice',
+                message="How do you want to use ppm?",
+                choices=['as a project manager', 'as a dependency manager'],
+                carousel=True  # Allows navigation through choices in a loop
+            )
+        ]
+        answer = inquirer.prompt(question)
+
+        match answer['choice']:
+            case 'as a project manager':
+                self.use_as_project_manager = True
+            case 'as a dependency manager':
+                self.use_as_project_manager = False
+
     def init(self) -> None:
+        self.identify_ppm_usage()
         self.get_user_input()
         self.create_env_file()
-        self.create_project_folder_files()
+        self.create_project_folder_files() if self.use_as_project_manager else None
         self.create_virtualenv()
         self.install_packages()
         self.parse_installed_package_dependency()

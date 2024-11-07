@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="ppm3",
-    version="0.0.2",
+    version="0.0.3",
     author="Rahul Das",
     author_email="rahulcodepython@gmail.com",
     description="A Python package manager.",
