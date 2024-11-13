@@ -1,5 +1,5 @@
 import argparse
-from .src import Init
+from .src import Init, Install
 
 
 def main():
@@ -9,6 +9,10 @@ def main():
     init_parser = subparsers.add_parser(
         "init", help="Initializes a new project")
     init_parser.set_defaults(func=Init().init)
+
+    install_parser = subparsers.add_parser(
+        "install", help="Install packages in the project")
+    install_parser.set_defaults(func=Install().install)
 
     args = parser.parse_args()
 
