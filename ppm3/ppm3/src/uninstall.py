@@ -2,7 +2,7 @@ from .default import PPM_Default
 import sys, re
 
 
-class Install:
+class Uninstall:
     def __init__(self):
         self.ppm = PPM_Default()
 
@@ -25,16 +25,16 @@ class Install:
         pattern = r"-?([a-zA-Z0-9\-_]+==[0-9\.]+)"
         self.ppm.packages = [match.lstrip("-") for match in re.findall(pattern, text)]
 
-    def install(self, *args) -> None:
-        self.ppm.animation.start("Working Prograss")
+    def uninstall(self, *args) -> None:
         self.check_configuration_file_file()
         if len(args[0]) == 0:
             self.parse_preinstalled_packages()
         else:
             self.ppm.packages = args[0]
-        self.ppm.create_virtualenv(show_print_statement=False)
-        self.ppm.install_packages(show_print_statement=False)
+        self.ppm.uninstall_packages()
+        if len(args[0]) == 0:
+            self.ppm.overwrite_configuration_file_remove_dependencies()
+        else:
+            self.ppm.overwrite_configuration_file()
         self.ppm.parse_installed_package_dependency(show_print_statement=False)
         self.ppm.overwrite_configuration_file(show_print_statement=False)
-        self.ppm.animation.stop()
-        print("Installation done.")
