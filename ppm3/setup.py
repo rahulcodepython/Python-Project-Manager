@@ -25,6 +25,7 @@ setup(
     install_requires=[
         "inquirer == 3.4.0",
         "setuptools == 75.5.0",
+        "colorama == 0.4.6",
     ],
     entry_points={
         "console_scripts": [

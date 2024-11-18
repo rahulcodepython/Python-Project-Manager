@@ -25,6 +25,9 @@ def main():
         "uninstall", help="install packages in the project"
     )
     uninstall_parser.add_argument("packages", nargs="*", help="Packages to uninstall")
+    uninstall_parser.add_argument(
+        "-d", action="store_true", help="uninstall packages with dependencies"
+    )
     uninstall_parser.set_defaults(func=Uninstall().uninstall)
 
     args = parser.parse_args()
@@ -34,6 +37,6 @@ def main():
     elif args.command == "install":
         args.func(args.packages)
     elif args.command == "uninstall":
-        args.func(args.packages)
+        args.func(args.d, args.packages)
     else:
         parser.print_help()

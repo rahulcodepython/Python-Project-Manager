@@ -46,9 +46,16 @@ It only covers the most common items and meta data of the project.
         print("Default values are selected.\n")
         self.ppm.create_env_file()
         self.ppm.create_project_folder_files()
-        self.ppm.create_virtualenv(True)
-        self.ppm.packages.append("python-dotenv")
-        self.ppm.install_packages(True)
-        self.ppm.parse_installed_package_dependency(True)
+        self.ppm.create_virtualenv()
+        (
+            self.ppm.packages.append("python-dotenv")
+            if self.ppm.agree_to_create_env_file
+            else None
+        )
+        self.ppm.install_packages()
+        self.ppm.parse_installed_package_dependency()
         self.ppm.create_configuration_file()
         self.ppm.console_write_instructions()
+
+
+# ppm run

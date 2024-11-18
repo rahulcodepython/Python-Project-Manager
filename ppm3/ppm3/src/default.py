@@ -6,6 +6,7 @@ import os
 import json
 from .loading import Loading
 from typing import List, Literal
+from colorama import Fore, Style
 
 
 class PPM_Default:
@@ -106,20 +107,11 @@ class PPM_Default:
                     + "'"
                 )
 
-    def create_virtualenv(self, animation=False, show_print_statement=True) -> None:
-        self.animation.start("Creating virtual environment") if animation else None
+    def create_virtualenv(self) -> None:
         if not os.path.exists(self.virtual_environment_name):
             subprocess.run(
                 [sys.executable, "-m", "venv", self.virtual_environment_name]
             )
-
-            self.animation.stop()
-            if show_print_statement:
-                print("Virtual environment created.\n")
-        else:
-            self.animation.stop()
-            if show_print_statement:
-                print("Virtual environment already exists.\n")
 
     def create_folders(self, path: str) -> None:
         folder_path = path.split("/")
@@ -193,13 +185,7 @@ class PPM_Default:
 
         with open(self.entry_point_path + self.entry_point, "w") as file:
             file.write(
-                """from dotenv import load_dotenv
-import os
-                    
-load_dotenv()
-                
-# to use environment variables
-# os.getenv('ENV_VARIABLE_NAME')
+                f"""{"from dotenv import load_dotenv\nimport os\nload_dotenv()\n# to use environment variables\n# os.getenv('ENV_VARIABLE_NAME')" if self.agree_to_create_env_file else ''}
                 
 def main() -> None:
     print('Hello, World!')
@@ -211,9 +197,7 @@ if __name__ == '__main__':
         self.animation.stop()
         print("src folder created. \n")
 
-    def install_packages(self, animation=False, show_print_statement=True) -> None:
-        self.animation.start("Installing packages") if animation else None
-
+    def install_packages(self) -> None:
         self.packages.append("pipdeptree")
 
         script: str = self.generate_script(
@@ -223,16 +207,10 @@ if __name__ == '__main__':
 
         if result.returncode != 0:
             self.animation.stop()
-            print("An error occurred while checking packages. Please try again.")
-            print(f"Error message is {result.stderr}")
+            print(Fore.RED + result.stderr + Style.RESET_ALL)
             sys.exit(0)
 
-        self.animation.stop()
-        if show_print_statement:
-            print("All packages installed.\n")
-
-    def uninstall_packages(self, animation=False) -> None:
-        self.animation.start("Uninstalling packages") if animation else None
+    def uninstall_packages(self) -> None:
 
         script: str = self.generate_script(
             ["python -m pip uninstall " + " ".join(self.packages) + " -y"]
@@ -241,16 +219,10 @@ if __name__ == '__main__':
 
         if result.returncode != 0:
             self.animation.stop()
-            print("An error occurred while checking packages. Please try again.")
-            print(f"Error message is {result.stderr}")
+            print(Fore.RED + result.stderr + Style.RESET_ALL)
             sys.exit(0)
 
-        self.animation.stop()
-        print("All packages uninstalled.\n")
-
-    def parse_installed_package_dependency(
-        self, animation=False, show_print_statement=True
-    ) -> None:
+    def parse_installed_package_dependency(self) -> None:
         def format_package_dependency(result: str) -> None:
             try:
                 for package in json.loads(result.stdout):
@@ -288,11 +260,11 @@ if __name__ == '__main__':
 
                 self.package_dependency = dict(list_of_nested_dict)
             except Exception as e:
+                self.animation.stop()
                 print("An error occurred while checking packages. Please try again.")
                 print(f"Error message is {e}")
                 sys.exit(0)
 
-        self.animation.start("Checking packages") if animation else None
         script: str = self.generate_script(["pipdeptree --json"])
         result = subprocess.run(script, shell=True, capture_output=True, text=True)
 
@@ -300,13 +272,7 @@ if __name__ == '__main__':
             format_package_dependency(result)
         else:
             self.animation.stop()
-            print("An error occurred while checking packages. Please try again.")
-            print(f"Error message is {result.stderr}")
-            sys.exit(0)
-
-        self.animation.stop()
-        if show_print_statement:
-            print("All packages checked.\n")
+            print(Fore.RED + result.stderr + Style.RESET_ALL)
 
     def format_dependencies(self) -> str:
         output = "[dependencies]\n"
@@ -348,7 +314,8 @@ license = "{self.license}"
 python_version = "{self.python_version}" \n\n
 [environment]
 path = "{self.virtual_environment_activate_path}" \n\n
-[environment_variables]\n"""
+[environment_variables]
+\n\n"""
 
             if self.agree_to_create_env_file:
                 file_content += f"""path = "{self.environment_variable_path}{self.environment_variable_name}"
@@ -367,15 +334,10 @@ run = "python {self.entry_point_path}{self.entry_point}"\n\n
 
             return file_content
 
-        self.animation.start(f"Creating {self.meta_data_file_name} file")
-
         file_content = write_file_content()
 
         with open(self.meta_data_file_name, "w") as file:
             file.write(file_content)
-
-        self.animation.stop()
-        print(f"{self.meta_data_file_name} file is created.")
 
     def console_write_instructions(self) -> None:
         print(
@@ -392,15 +354,7 @@ run = "python {self.entry_point_path}{self.entry_point}"\n\n
             )
         print("Happy coding!")
 
-    def overwrite_configuration_file(
-        self, animation=False, show_print_statement=True
-    ) -> None:
-        (
-            self.animation.start(f"Overwritting {self.meta_data_file_name} file")
-            if animation
-            else None
-        )
-
+    def overwrite_configuration_file(self) -> None:
         formated_dependencies = self.format_dependencies()
 
         with open(self.meta_data_file_name, "r") as file:
@@ -415,7 +369,3 @@ run = "python {self.entry_point_path}{self.entry_point}"\n\n
 
             with open(self.meta_data_file_name, "w") as file:
                 file.writelines(lines)
-
-        self.animation.stop()
-        if show_print_statement:
-            print(f"{self.meta_data_file_name} file is overwritten.\n")

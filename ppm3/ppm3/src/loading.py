@@ -23,14 +23,14 @@ class Loading:
 
         # Clear the stop event and start a new animation thread
         self.stop_event.clear()
-        self.animation_thread = threading.Thread(
-            target=self._animate, args=(message,))
+        self.animation_thread = threading.Thread(target=self._animate, args=(message,))
         self.animation_thread.start()
 
-    def stop(self):
+    def stop(self, message=None):
         # Set the stop event to terminate the animation loop
         if self.animation_thread:
             self.stop_event.set()
             self.animation_thread.join()
-            sys.stdout.write("\n")  # Clear the animation line
+            sys.stdout.write("\n")  # Clear the animation
+            print(message) if message else None
             sys.stdout.flush()

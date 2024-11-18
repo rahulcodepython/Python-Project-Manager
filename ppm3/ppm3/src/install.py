@@ -8,6 +8,7 @@ class Install:
 
     def check_configuration_file_file(self) -> None:
         if not self.ppm.configuration_file_exists:
+            self.ppm.animation.stop()
             print(
                 f"{self.ppm.meta_data_file_name} file not found. Please run 'ppm init' command to create {self.ppm.meta_data_file_name} file."
             )
@@ -26,15 +27,14 @@ class Install:
         self.ppm.packages = [match.lstrip("-") for match in re.findall(pattern, text)]
 
     def install(self, *args) -> None:
-        self.ppm.animation.start("Working Prograss")
+        self.ppm.animation.start("Installing packages")
         self.check_configuration_file_file()
         if len(args[0]) == 0:
             self.parse_preinstalled_packages()
         else:
             self.ppm.packages = args[0]
-        self.ppm.create_virtualenv(show_print_statement=False)
-        self.ppm.install_packages(show_print_statement=False)
-        self.ppm.parse_installed_package_dependency(show_print_statement=False)
-        self.ppm.overwrite_configuration_file(show_print_statement=False)
-        self.ppm.animation.stop()
-        print("Installation done.")
+        self.ppm.create_virtualenv()
+        self.ppm.install_packages()
+        self.ppm.parse_installed_package_dependency()
+        self.ppm.overwrite_configuration_file()
+        self.ppm.animation.stop("Packages installed successfully")
