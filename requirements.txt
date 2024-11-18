@@ -20,7 +20,7 @@ nh3==0.2.18
 packaging==24.2
 pipdeptree==2.23.4
 pkginfo==1.10.0
--e git+https://github.com/rahulcodepython/Python-Project-Manager.git@ad8ec6123eb9f856a065ab1a875ddd3d0fb82c9e#egg=ppm3&subdirectory=ppm3
+-e git+https://github.com/rahulcodepython/Python-Project-Manager.git@b627dda5ff6e42555cb34796b64013b1c51856c2#egg=ppm3&subdirectory=ppm3
 Pygments==2.18.0
 python-dotenv==1.0.1
 pywin32-ctypes==0.2.3
