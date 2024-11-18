@@ -1,5 +1,5 @@
 import argparse
-from .src import Init, Install, Uninstall, Run
+from .src import Init, Install, Uninstall, Run, AddEnv
 
 
 def main():
@@ -34,6 +34,13 @@ def main():
     # run_parser = subparsers.add_parser("run", help="run the project")
     # run_parser.set_defaults(func=Run().run)
 
+    # Add_Environment command to add environment file
+    add_env_parser = subparsers.add_parser("add_env", help="add environment file")
+    add_env_parser.add_argument(
+        "values", nargs="*", help="Values to add in environment file"
+    )
+    add_env_parser.set_defaults(func=AddEnv().add_env)
+
     args = parser.parse_args()
 
     if args.command == "init":
@@ -42,6 +49,8 @@ def main():
         args.func(args.packages)
     elif args.command == "uninstall":
         args.func(args.d, args.packages)
+    elif args.command == "add_env":
+        args.func(args.values)
     # elif args.command == "run":
     #     args.func()
     else:
