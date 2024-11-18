@@ -6,14 +6,6 @@ class Uninstall:
     def __init__(self):
         self.ppm = PPM_Default()
 
-    def check_configuration_file_file(self) -> None:
-        if not self.ppm.configuration_file_exists:
-            self.ppm.animation.stop()
-            print(
-                f"{self.ppm.meta_data_file_name} file not found. Please run 'ppm init' command to create {self.ppm.meta_data_file_name} file."
-            )
-            sys.exit(0)
-
     def parse_preinstalled_packages(self) -> None:
         package_name = "pipdeptree"
 
@@ -54,7 +46,7 @@ class Uninstall:
 
     def uninstall(self, with_dependencies, *args) -> None:
         self.ppm.animation.start("Uninstalling packages")
-        self.check_configuration_file_file()
+        self.ppm.check_configuration_file_file()
         if len(args[0]) == 0:
             self.parse_preinstalled_packages()
         else:

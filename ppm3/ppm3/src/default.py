@@ -61,6 +61,14 @@ class PPM_Default:
             print("Operation is terminated.")
             sys.exit(0)
 
+    def check_configuration_file_file(self) -> None:
+        if not self.configuration_file_exists:
+            self.animation.stop()
+            print(
+                f"{self.meta_data_file_name} file not found. Please run 'ppm init' command to create {self.meta_data_file_name} file."
+            )
+            sys.exit(0)
+
     def valided_user_input(self, prompt: str, default: str) -> str:
         try:
             return input(f"{prompt} ({default}) ") or default

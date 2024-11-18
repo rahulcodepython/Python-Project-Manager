@@ -1,5 +1,5 @@
 import argparse
-from .src import Init, Install, Uninstall
+from .src import Init, Install, Uninstall, Run
 
 
 def main():
@@ -30,6 +30,10 @@ def main():
     )
     uninstall_parser.set_defaults(func=Uninstall().uninstall)
 
+    # Run command to run the code
+    # run_parser = subparsers.add_parser("run", help="run the project")
+    # run_parser.set_defaults(func=Run().run)
+
     args = parser.parse_args()
 
     if args.command == "init":
@@ -38,5 +42,7 @@ def main():
         args.func(args.packages)
     elif args.command == "uninstall":
         args.func(args.d, args.packages)
+    # elif args.command == "run":
+    #     args.func()
     else:
         parser.print_help()
