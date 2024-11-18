@@ -36,3 +36,4 @@ setup(
 
 # To build the package, run the following command:
 # python setup.py sdist bdist_wheel
+# python3 twine upload dist/*
