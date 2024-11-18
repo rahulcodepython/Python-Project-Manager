@@ -323,7 +323,7 @@ python_version = "{self.python_version}" \n\n
 [environment]
 path = "{self.virtual_environment_activate_path}" \n\n
 [environment_variables]
-\n\n"""
+"""
 
             if self.agree_to_create_env_file:
                 file_content += f"""path = "{self.environment_variable_path}{self.environment_variable_name}"

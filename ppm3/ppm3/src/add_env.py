@@ -54,7 +54,16 @@ class AddEnv:
                     while index + 1 < len(values):
                         file.write(f'{values[index]}="{values[index+1]}"\n')
                         index += 2
+
+                with open(self.meta_data_file_name, "r+") as file:
+                    contents = file.readlines()
+                    char_index = contents.index("[environment_variables]\n") + 1
+                    contents[char_index] = (
+                        f"path = {self.ppm.environment_variable_path}\n"
+                    )
+
                 print(f"{self.ppm.environment_variable_name} file is created.\n")
 
     def add_env(self, values):
+        self.ppm.check_configuration_file_file()
         self.create_env_file(values)
