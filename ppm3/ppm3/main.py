@@ -31,8 +31,8 @@ def main():
     uninstall_parser.set_defaults(func=Uninstall().uninstall)
 
     # Run command to run the code
-    # run_parser = subparsers.add_parser("run", help="run the project")
-    # run_parser.set_defaults(func=Run().run)
+    run_parser = subparsers.add_parser("run", help="run the project")
+    run_parser.set_defaults(func=Run().run)
 
     # Add_Environment command to add environment file
     add_env_parser = subparsers.add_parser("add_env", help="add environment file")
@@ -51,7 +51,7 @@ def main():
         args.func(args.d, args.packages)
     elif args.command == "add_env":
         args.func(args.values)
-    # elif args.command == "run":
-    #     args.func()
+    elif args.command == "run":
+        args.func()
     else:
         parser.print_help()
