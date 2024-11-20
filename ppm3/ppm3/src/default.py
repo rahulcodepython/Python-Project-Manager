@@ -334,7 +334,9 @@ path = "{self.virtual_environment_activate_path}" \n\n
 run = "python {self.entry_point_path}{self.entry_point}"\n\n
 """
                 if self.usage_of_ppm == "as a project manager"
-                else """"""
+                else """[command]
+run = "" \n\n
+"""
             )
 
             formated_dependencies = self.format_dependencies()
@@ -349,17 +351,25 @@ run = "python {self.entry_point_path}{self.entry_point}"\n\n
 
     def console_write_instructions(self) -> None:
         print(
-            f"\n{self.project_name} project is created in {self.current_working_directory}."
+            f"\n{self.project_name} project is created in {self.current_working_directory}.\n"
         )
-        print("This python project is built on python version", self.python_version)
-        print("Congratulations! Your project is ready to go.")
-        print("To install the dependencies, use the command 'ppm install'")
+        print(
+            "This python project is built on python version", self.python_version, ".\n"
+        )
+        print("Congratulations! Your project is ready to go.\n")
+        print("To install the dependencies, use the command 'ppm install'\n")
+        print("To uninstall the dependencies, use the command 'ppm uninstall'\n")
 
         if self.usage_of_ppm == "as a project manager":
-            print("To run the project, use the command 'ppm run'")
+            print("To run the project, use the command 'ppm run'\n")
             print(
-                f"main.py file is created in src folder ({ self.entry_point_path}). You can start coding in main.py file."
+                f"main.py file is created in src folder ({ self.entry_point_path}). You can start coding in main.py file.\n"
             )
+        else:
+            print(
+                f"To run the project, you have to first add script manually in {self.meta_data_file_name} file and then use the command 'ppm run'\n"
+            )
+
         print("Happy coding!")
 
     def overwrite_configuration_file(self) -> None:

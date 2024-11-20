@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ppm3
-Version: 0.0.5
+Version: 0.0.6
 Summary: A Python project manager.
 Home-page: https://github.com/rahulcodepython/Python-Project-Manager.git
 Author: Rahul Das
@@ -17,8 +17,6 @@ Description-Content-Type: text/markdown
 Requires-Dist: inquirer==3.4.0
 Requires-Dist: setuptools==75.5.0
 Requires-Dist: colorama==0.4.6
-
----
 
 # ppm Package
 
@@ -51,6 +49,14 @@ Use the `ppm` command followed by any of the subcommands listed below to perform
 ```bash
 ppm <command> [options]
 ```
+
+---
+
+### Important Notes
+
+1. **Using `ppm` as a Dependency Manager**: If you choose to use `ppm` as your dependency manager, you must specify a run script (e.g., the main Python file name or any other script you wish to run) in the projectâ€™s configuration. Without this, the `run` command will throw an error as it wonâ€™t know which script to execute.
+
+2. **Using `ppm` with an Existing Project**: If youâ€™re applying `ppm` to an existing project, ensure you specify `ppm` as the dependency manager when running the `ppm init` command. This will set up `ppm` to manage dependencies within your project.
 
 ---
 
@@ -128,7 +134,7 @@ Runs the project using the configuration specified in the project.
 ppm run
 ```
 
-This command runs the project. It can execute any Python code, scripts, servers, or other commands specified in the configuration.
+This command runs the project. **Note:** Ensure that a run script is specified in your project configuration when using `ppm` as a dependency manager; otherwise, this command will throw an error.
 
 #### 5. `add_env`
 
@@ -137,15 +143,13 @@ Adds environment variables to an `.env` file in the project.
 **Usage:**
 
 ```bash
-ppm add_env <KEY> <VALUE> <KEY2> <VALUE2> ...
+ppm add_env <KEY=VALUE> <KEY2=VALUE2> ...
 ```
 
 **Example:**
 
 ```bash
-ppm add_env DATABASE_URL mysql://user:password@localhost/dbname SECRET_KEY your_secret_key
+ppm add_env DATABASE_URL=mysql://user:password@localhost/dbname SECRET_KEY=your_secret_key
 ```
 
 This command adds the specified key-value pairs to the project's environment file.
-
----

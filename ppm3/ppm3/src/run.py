@@ -14,11 +14,10 @@ class Run:
         with open(self.ppm.meta_data_file_name, "r") as file:
             contents = file.readlines()
             line = contents[contents.index("[command]\n") + 1]
-            line_content = line.split(" ")
+            line_content = line.split(" = ")
 
-            if line_content[0] == "run":
-                run_script = f"{line_content[2][1:]} -u {line_content[3].split('"')[0]}"
-
+            if "run" in line_content:
+                run_script = line_content[1].replace("\n", "").replace('"', "")
             else:
                 self.ppm.animation.stop(
                     "No run command found in the configuration file"
