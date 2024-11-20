@@ -208,6 +208,10 @@ if __name__ == '__main__':
     def install_packages(self) -> None:
         self.packages.append("pipdeptree")
 
+        result = subprocess.run(self.generate_script(["python -m pip install --upgrade pip"]), shell=True, capture_output=True, text=True)
+        if result.returncode == 0:
+            ...
+
         script: str = self.generate_script(
             ["pip install --no-cache-dir " + " ".join(self.packages)]
         )
