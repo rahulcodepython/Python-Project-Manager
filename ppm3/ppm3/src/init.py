@@ -42,10 +42,14 @@ It only covers the most common items and meta data of the project.
 
     def init(self, select_default_values=None) -> None:
         self.identify_ppm_usage()
-        self.configure_project_by_user_input() if not select_default_values else None
-        print("Default values are selected.\n")
+        (
+            self.configure_project_by_user_input()
+            if not select_default_values
+            else print("Default values are selected.\n")
+        )
         self.ppm.create_env_file()
         self.ppm.create_project_folder_files()
+        self.ppm.animation.start("Configuring project")
         self.ppm.create_virtualenv()
         (
             self.ppm.packages.append("python-dotenv")

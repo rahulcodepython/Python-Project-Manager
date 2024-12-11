@@ -77,20 +77,13 @@ class PPM_Default:
             sys.exit(0)
 
     def get_package_name_for_installation(self) -> None:
-        print("\nAdd the packages you want to install in the project.")
         print(
-            "Enter the package name like (<package_name>==<version>) or (<package_name>) to install spacific version or latest version."
+            "\nEnter the name of the packages you want to install in the project like (<package_name>==<version>) or (<package_name>)."
         )
-
         try:
-            while True:
-                package_name: str = input(
-                    "Enter package name to install (press Enter to end): "
-                )
-                if package_name:
-                    self.packages.append(package_name)
-                else:
-                    break
+            package_name: str = input("Packages (press Enter to end): ")
+            if package_name:
+                self.packages += package_name.split(" ")
         except KeyboardInterrupt:
             print("Operation is terminated.")
             sys.exit(0)
@@ -208,7 +201,12 @@ if __name__ == '__main__':
     def install_packages(self) -> None:
         self.packages.append("pipdeptree")
 
-        result = subprocess.run(self.generate_script(["python -m pip install --upgrade pip"]), shell=True, capture_output=True, text=True)
+        result = subprocess.run(
+            self.generate_script(["python -m pip install --upgrade pip"]),
+            shell=True,
+            capture_output=True,
+            text=True,
+        )
         if result.returncode == 0:
             ...
 
@@ -354,6 +352,7 @@ run = "" \n\n
             file.write(file_content)
 
     def console_write_instructions(self) -> None:
+        self.animation.stop()
         print(
             f"\n{self.project_name} project is created in {self.current_working_directory}.\n"
         )

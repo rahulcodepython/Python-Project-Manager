@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ppm3
-Version: 0.0.7
+Version: 0.0.8
 Summary: A Python project manager.
 Home-page: https://github.com/rahulcodepython/Python-Project-Manager.git
 Author: Rahul Das
@@ -20,7 +20,7 @@ Requires-Dist: colorama==0.4.6
 
 # ppm Package
 
-`ppm` is a Python Project Manager CLI tool that simplifies project setup, dependency management, environment configuration, and running project commands. This tool is ideal for developers looking for a structured and efficient way to manage project dependencies, execute scripts, and configure environment variables directly from the command line.
+`ppm` is a Python Project Manager CLI tool that simplifies project setup, dependency management, environment configuration, and running project commands. This tool is ideal for developers looking for a structured and efficient way to manage project dependencies, execute scripts, and configure environment variables directly from the command line. This is all in one cli tools for long pip commands.
 
 ## Overview
 
@@ -35,10 +35,10 @@ The `ppm` CLI is designed to streamline project management, reducing setup time 
 
 ## Installation
 
-To install `ppm`, clone the repository and run:
+To install `ppm`:
 
 ```bash
-pip install .
+pip install ppm3
 ```
 
 ## Usage
@@ -80,6 +80,68 @@ ppm init -d
 ```
 
 This command initializes the project using default configuration settings.
+
+**On installation, you'll see the following prompts:**
+
+Asking about how will you use ppm.
+
+```bash
+[?] How do you want to use ppm?:
+   as a project manager
+ > as a dependency manager
+```
+
+If you have choosen ppm as a project manager and not given the flag -d then you have to answer:
+
+```bash
+project name (system)
+version (1.0.0)
+description ()
+entry point (main.py)
+git repository ()
+author ()
+license (ISC)
+```
+
+You can specify required packages at the time of initialize the project.
+
+```bash
+Enter the name of the packages you want to install in the project like (<package_name>==<version>) or (<package_name>).
+Packages (press Enter to end): <package1> <package2> ...
+```
+
+**Example:**
+
+```bash
+Enter the name of the packages you want to install in the project like (<package_name>==<version>) or (<package_name>).
+Packages (press Enter to end): requests flask
+```
+
+This is for generating .env file.
+
+```bash
+[?] Are you sure you want to add .env file?:
+   Yes
+ > No
+```
+
+But if you have already .env file in your project, then you will encounter
+
+```bash
+[?] .env file already exists.:
+   Overwrite
+ > Keep as it is
+
+.env file is untouched.
+```
+
+PPM will create a src folder in your root directory and inside it, it will generate a `main.py` file. If you have already this folder structure, you will be asked:
+
+```bash
+[?] Do you want to override main.py file?:
+ > Yes
+   No
+```
 
 #### 2. `install`
 
@@ -175,3 +237,23 @@ ppm add_env DATABASE_URL=mysql://user:password@localhost/dbname SECRET_KEY=your_
 ```
 
 This command adds the specified environment variables to the `.env` file.
+
+#### 6. `list`
+
+List all packages in terminal.
+
+**Usage:**
+
+```bash
+ppm list
+```
+
+#### 7. `freeze`
+
+Generate `requirements.txt` file for your project packages.
+
+**Usage:**
+
+```bash
+ppm freeze
+```

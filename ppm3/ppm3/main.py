@@ -1,5 +1,5 @@
 import argparse
-from .src import Init, Install, Uninstall, Run, AddEnv
+from .src import Init, Install, Uninstall, Run, AddEnv, List, Freeze
 
 
 def main():
@@ -32,9 +32,7 @@ def main():
 
     # Run command to run the code
     run_parser = subparsers.add_parser("run", help="run the project")
-    run_parser.add_argument(
-        "script", nargs="*", help="Script to run in the project"
-    )
+    run_parser.add_argument("script", nargs="*", help="Script to run in the project")
     run_parser.set_defaults(func=Run().run)
 
     # Add_Environment command to add environment file
@@ -43,6 +41,14 @@ def main():
         "values", nargs="*", help="Values to add in environment file"
     )
     add_env_parser.set_defaults(func=AddEnv().add_env)
+
+    list_parser = subparsers.add_parser("list", help="list all the packages")
+    list_parser.set_defaults(func=List().list)
+
+    freeze_parser = subparsers.add_parser(
+        "freeze", help="Generate requirements.txt file"
+    )
+    freeze_parser.set_defaults(func=Freeze().freeze)
 
     args = parser.parse_args()
 
@@ -56,5 +62,9 @@ def main():
         args.func(args.values)
     elif args.command == "run":
         args.func(args.script)
+    elif args.command == "list":
+        args.func()
+    elif args.command == "freeze":
+        args.func()
     else:
         parser.print_help()
