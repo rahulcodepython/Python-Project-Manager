@@ -1,9 +1,20 @@
 import argparse
 from .src import Init, Install, Uninstall, Run, AddEnv, List, Freeze
 
+# Define the version
+VERSION = "0.0.9"
+
 
 def main():
     parser = argparse.ArgumentParser(prog="ppm")
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=f"%(prog)s {VERSION}",
+        help="show the version of ppm and exit",
+    )
+
     subparsers = parser.add_subparsers(dest="command")
 
     # Init command with -d flag
@@ -32,7 +43,7 @@ def main():
 
     # Run command to run the code
     run_parser = subparsers.add_parser("run", help="run the project")
-    run_parser.add_argument("script", nargs="*", help="Script to run in the project")
+    run_parser.add_argument("script", nargs="+", help="Script to run in the project")
     run_parser.set_defaults(func=Run().run)
 
     # Add_Environment command to add environment file

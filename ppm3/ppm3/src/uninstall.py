@@ -1,5 +1,6 @@
+from .decorators import operation_termination
 from .default import PPM_Default
-import sys, re, subprocess
+import subprocess
 
 
 class Uninstall:
@@ -44,6 +45,7 @@ class Uninstall:
 
         self.ppm.packages = list(dependencies)
 
+    @operation_termination
     def uninstall(self, with_dependencies, *args) -> None:
         self.ppm.animation.start("Uninstalling packages")
         self.ppm.check_configuration_file_file()

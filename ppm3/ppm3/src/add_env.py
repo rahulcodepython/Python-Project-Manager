@@ -1,3 +1,4 @@
+from .decorators import operation_termination
 from .default import PPM_Default
 import os
 
@@ -64,6 +65,7 @@ class AddEnv:
 
                 print(f"{self.ppm.environment_variable_name} file is created.\n")
 
+    @operation_termination
     def add_env(self, values):
         self.ppm.check_configuration_file_file()
         self.create_env_file(values)

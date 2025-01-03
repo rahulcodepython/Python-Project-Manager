@@ -10,6 +10,7 @@ ppm3.egg-info/requires.txt
 ppm3.egg-info/top_level.txt
 ppm3/src/__init__.py
 ppm3/src/add_env.py
+ppm3/src/decorators.py
 ppm3/src/default.py
 ppm3/src/freeze.py
 ppm3/src/init.py

@@ -1,3 +1,4 @@
+from .decorators import operation_termination
 import subprocess
 import sys
 from .default import PPM_Default
@@ -17,7 +18,7 @@ class Run:
             try:
                 command_start = contents.index("[command]\n") + 1
                 for line_content in contents[command_start:]:
-                    if line_content == '\n':
+                    if line_content == "\n":
                         break  # Stop at an empty line
 
                     key, value = line_content.strip().split(" = ")
@@ -37,18 +38,17 @@ class Run:
                         break
                 else:
                     sys.exit(0)
-            
+
             except ValueError:
                 sys.exit(0)
 
         self.script = run_script
 
+    @operation_termination
     def interpret_code(self):
-        try:
-            subprocess.run(self.script, shell=True)
-        except (KeyboardInterrupt, SystemExit):
-            ...
+        subprocess.run(self.script, shell=True)
 
+    @operation_termination
     def run(self, script):
         self.ppm.check_configuration_file_file()
         self.create_script(script)

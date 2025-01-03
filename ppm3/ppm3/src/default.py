@@ -21,6 +21,7 @@ class PPM_Default:
         self.description: str = ""
         self.entry_point: str = "main.py"
         self.entry_point_path: str = f"./src/"
+        self.git_init: bool = False
         self.git_repository: str = ""
         self.author: str = ""
         self.license: str = "ISC"
@@ -40,6 +41,7 @@ class PPM_Default:
         self.package_dependency: dict = {}
         self.animation = Loading()
 
+    # @operation_termination
     def ask_choice_question(self, question: str, choices: List[str]) -> str:
         question = [
             inquirer.List(
@@ -49,17 +51,12 @@ class PPM_Default:
                 carousel=True,  # Allows navigation through choices in a loop
             )
         ]
-        try:
-            answer = inquirer.prompt(question)
+        answer = inquirer.prompt(question)
 
-            if answer is None:
-                raise KeyboardInterrupt
+        if answer is None:
+            raise KeyboardInterrupt
 
-            return answer["choice"]
-
-        except KeyboardInterrupt:
-            print("Operation is terminated.")
-            sys.exit(0)
+        return answer["choice"]
 
     def check_configuration_file_file(self) -> None:
         if not self.configuration_file_exists:
@@ -70,25 +67,17 @@ class PPM_Default:
             sys.exit(0)
 
     def valided_user_input(self, prompt: str, default: str) -> str:
-        try:
-            return input(f"{prompt} ({default}) ") or default
-        except KeyboardInterrupt:
-            print("Operation is terminated.")
-            sys.exit(0)
+        return input(f"{prompt} ({default}) ") or default
 
     def get_package_name_for_installation(self) -> None:
         print(
             "\nEnter the name of the packages you want to install in the project like (<package_name>==<version>) or (<package_name>)."
         )
-        try:
-            package_name: str = input("Packages (press Enter to end): ")
-            if package_name:
-                self.packages += package_name.split(" ")
-        except KeyboardInterrupt:
-            print("Operation is terminated.")
-            sys.exit(0)
-        finally:
-            print("\n")
+        package_name: str = input("Packages (press Enter to end): ")
+        if package_name:
+            self.packages += package_name.split(" ")
+
+        print("")
 
     def generate_script(self, script: list[str]) -> str:
         if platform.system() == "Windows":
@@ -165,9 +154,6 @@ class PPM_Default:
                 print(f"{self.environment_variable_name} file is created.\n")
 
     def create_project_folder_files(self) -> None:
-        if self.usage_of_ppm == "as a dependency manager":
-            return
-
         self.create_folders(self.entry_point_path)
 
         if os.path.exists(self.entry_point_path + self.entry_point):
@@ -351,30 +337,6 @@ run = "" \n\n
         with open(self.meta_data_file_name, "w") as file:
             file.write(file_content)
 
-    def console_write_instructions(self) -> None:
-        self.animation.stop()
-        print(
-            f"\n{self.project_name} project is created in {self.current_working_directory}.\n"
-        )
-        print(
-            "This python project is built on python version", self.python_version, ".\n"
-        )
-        print("Congratulations! Your project is ready to go.\n")
-        print("To install the dependencies, use the command 'ppm install'\n")
-        print("To uninstall the dependencies, use the command 'ppm uninstall'\n")
-
-        if self.usage_of_ppm == "as a project manager":
-            print("To run the project, use the command 'ppm run'\n")
-            print(
-                f"main.py file is created in src folder ({ self.entry_point_path}). You can start coding in main.py file.\n"
-            )
-        else:
-            print(
-                f"To run the project, you have to first add script manually in {self.meta_data_file_name} file and then use the command 'ppm run'\n"
-            )
-
-        print("Happy coding!")
-
     def overwrite_configuration_file(self) -> None:
         formated_dependencies = self.format_dependencies()
 
@@ -390,3 +352,17 @@ run = "" \n\n
 
             with open(self.meta_data_file_name, "w") as file:
                 file.writelines(lines)
+
+    def git_initiate(self) -> None:
+        try:
+            if self.git_init:
+                result = subprocess.run(
+                    self.generate_script(
+                        ["git init", f"git remote add origin {self.git_repository}"]
+                    ),
+                    shell=True,
+                )
+        except Exception as e:
+            self.animation.stop()
+            print(f"An error occurred while initiating git. Error message is {e}")
+            sys.exit(0)

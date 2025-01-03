@@ -1,5 +1,6 @@
+from .decorators import operation_termination
 from .default import PPM_Default
-import sys, re
+import re
 
 
 class Install:
@@ -18,6 +19,7 @@ class Install:
         pattern = r"-?([a-zA-Z0-9\-_]+==[0-9\.]+)"
         self.ppm.packages = [match.lstrip("-") for match in re.findall(pattern, text)]
 
+    @operation_termination
     def install(self, *args) -> None:
         self.ppm.animation.start("Installing packages")
         self.ppm.check_configuration_file_file()

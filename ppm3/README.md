@@ -78,9 +78,18 @@ project name (system)
 version (1.0.0)
 description ()
 entry point (main.py)
-git repository ()
 author ()
 license (ISC)
+```
+
+You can initiate git at the begining of the project. You will be asked
+
+```bash
+[?] Do you want to add github configuration:
+ > Yes
+   No
+
+github repository name () https://github.com/rahulcodepython/New_Repo.git
 ```
 
 You can specify required packages at the time of initialize the project.
