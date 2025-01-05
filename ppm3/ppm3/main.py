@@ -43,7 +43,7 @@ def main():
 
     # Run command to run the code
     run_parser = subparsers.add_parser("run", help="run the project")
-    run_parser.add_argument("script", nargs="+", help="Script to run in the project")
+    run_parser.add_argument("script", nargs="*", help="Script to run in the project")
     run_parser.set_defaults(func=Run().run)
 
     # Add_Environment command to add environment file

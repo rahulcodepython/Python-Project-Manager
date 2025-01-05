@@ -46,7 +46,10 @@ class Run:
 
     @operation_termination
     def interpret_code(self):
-        subprocess.run(self.script, shell=True)
+        try:
+            subprocess.run(self.script, shell=True)
+        except (KeyboardInterrupt, SystemExit):
+            ...
 
     @operation_termination
     def run(self, script):
