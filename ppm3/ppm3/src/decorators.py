@@ -1,9 +1,19 @@
 import sys
+from typing import Callable, Any
 from .loading import Loading
 
 
-def operation_termination(func):
-    def wrapper(*args, **kwargs):
+def operation_termination(func: Callable) -> Callable:
+    """
+    Decorator to handle KeyboardInterrupt exceptions and terminate the program gracefully.
+
+    Args:
+        func (Callable): The function to be wrapped.
+
+    Returns:
+        Callable: The wrapped function.
+    """
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
@@ -13,22 +23,30 @@ def operation_termination(func):
     return wrapper
 
 
-def loading_animation(message="Loading"):
-    loading = Loading()
+def loading_animation(message: str = "Loading") -> Callable:
+    """
+    Decorator to display a loading animation while the wrapped function is executing.
 
-    def decorator(func):
-        def wrapper(*args, **kwargs):
+    Args:
+        message (str): The message to display with the loading animation. Defaults to "Loading".
+
+    Returns:
+        Callable: The decorator function.
+    """
+    loading: Loading = Loading()
+
+    def decorator(func: Callable) -> Callable:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             try:
-                loading.start(message=message)
                 # Start loading animation
+                loading.start(message=message)
                 result = func(*args, **kwargs)
-                loading.stop()  # Stop loading animation
                 return result
             except Exception as e:
-                loading.stop()
                 print("\nAn error occurred:", e)
                 sys.exit(0)
             finally:
+                # Ensure loading animation stops in all cases
                 loading.stop()
 
         return wrapper
