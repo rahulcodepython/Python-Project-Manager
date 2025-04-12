@@ -9,7 +9,7 @@ class Loading:
 
     Attributes:
         stop_event (threading.Event): Event to signal stopping the animation.
-        animation_thread (Optional[threading.Thread]): Thread running the animation.
+        animation_thread (None | [threading.Thread]): Thread running the animation.
     """
 
     def __init__(self) -> None:
@@ -57,7 +57,7 @@ class Loading:
         Stop the loading animation.
 
         Args:
-            message (Optional[str]): An optional message to display after stopping.
+            message (None | [str]): An optional message to display after stopping.
         """
         if self.animation_thread:
             # Signal the animation thread to stop

@@ -62,6 +62,10 @@ setup(
     entry_points=ENTRY_POINTS,
 )
 
+# To install the package locally, run the following command:
+# pip install -e .
+
+
 # To build the package, run the following command:
 # python setup.py sdist bdist_wheel
 # To upload the package to PyPI, run the following command:

@@ -17,4 +17,7 @@ ppm3/src/install.py
 ppm3/src/list.py
 ppm3/src/loading.py
 ppm3/src/manager.py
+ppm3/src/outdated.py
+ppm3/src/run.py
 ppm3/src/uninstall.py
+ppm3/src/update.py

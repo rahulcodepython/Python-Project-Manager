@@ -31,6 +31,7 @@ class Init:
         else:
             self.manager.configure_project_by_user_input()
 
+        self.manager.config = self.manager._initialize_config()
         self._setup_project()
 
     def _handle_existing_configuration(self) -> None:

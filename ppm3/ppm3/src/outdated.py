@@ -19,6 +19,9 @@ class Outdated:
         # Ensure the required files exist
         self._check_file_existence()
 
+        # Check if the virtual environment is already created
+        self.manager.create_virtualenv()
+
         # Display outdated packages
         self._show_outdated_packages()
 

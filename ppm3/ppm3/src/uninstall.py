@@ -29,6 +29,9 @@ class Uninstall:
         # Ensure the configuration file exists
         self.manager.check_file_existence()
 
+        # Check if the virtual environment is already created
+        self.manager.create_virtualenv()
+
         # Check if the packages list is empty
         if not packages:
             print("No packages provided. Please provide a list of packages to uninstall.")

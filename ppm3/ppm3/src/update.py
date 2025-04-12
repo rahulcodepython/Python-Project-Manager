@@ -26,8 +26,11 @@ class Update:
         # Ensure the required file exists
         self.manager.check_file_existence()
 
+        # Check if the virtual environment is already created
+        self.manager.create_virtualenv()
+
         # Determine the packages to update
-        if packages is None:
+        if packages is None or packages.__len__() == 0:
             self.manager.parse_outdated_packages()
         else:
             self.manager.packages = packages
@@ -40,6 +43,6 @@ class Update:
         Performs the update process by installing packages, retrieving pip packages,
         and creating a configuration file.
         """
-        self.manager.install_packages()
+        self.manager.update_install_packages()
         self.manager.get_pip_packages()
         self.manager.create_write_configuration_file()

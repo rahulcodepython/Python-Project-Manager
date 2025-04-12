@@ -24,7 +24,7 @@ class Freeze:
         # Check if the necessary files exist
         self.manager.check_file_existence()
 
-        # Create a virtual environment
+        # Check if the virtual environment is already created
         self.manager.create_virtualenv()
 
         # Freeze the requirements into a file

@@ -1,6 +1,6 @@
 from .manager import Manager
 import subprocess
-from typing import List, Optional
+from typing import List
 
 
 class Run:
@@ -14,18 +14,23 @@ class Run:
         """
         self.manager: Manager = Manager()
 
-    def run(self, scripts: Optional[List[str]]) -> None:
+    def run(self, scripts: List[str] | None) -> None:
         """
         Executes the given scripts using the Manager's configuration.
 
         Args:
-            scripts (Optional[List[str]]): A list of script names to run. If empty, the default "run" command is used.
+            scripts (List[str] | None): A list of script names to run. If empty, the default "run" command is used.
         """
         # Ensure the required file exists
         self.manager.check_file_existence()
 
         # Determine the command to execute
-        command: Optional[str] = self._get_command(scripts)
+        command: str | None = self._get_command(scripts)
+
+        # If no command is found in the configuration, notify the user and exit the method
+        if command is None:
+            print("No command found to execute.")
+            return
 
         # Generate the script to execute
         script: str = self.manager.generate_script([command])
@@ -33,15 +38,15 @@ class Run:
         # Execute the script and handle the result
         self._execute_script(script)
 
-    def _get_command(self, scripts: Optional[List[str]]) -> Optional[str]:
+    def _get_command(self, scripts: List[str] | None) -> str | None:
         """
         Retrieves the command to execute based on the provided scripts.
 
         Args:
-            scripts (Optional[List[str]]): A list of script names.
+            scripts (List[str] | None): A list of script names.
 
         Returns:
-            Optional[str]: The command to execute.
+            [str] | None: The command to execute.
         """
         return self.manager.config["commands"].get(
             "run" if not scripts else scripts[0], None

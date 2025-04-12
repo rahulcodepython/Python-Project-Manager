@@ -25,6 +25,9 @@ class List:
         # Ensure the required file exists
         self.manager.check_file_existence()
 
+        # Check if the virtual environment is already created
+        self.manager.create_virtualenv()
+
         # Generate the script for the pip list command
         script: str = self.manager.generate_script(["python -m pip list"])
 

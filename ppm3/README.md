@@ -63,12 +63,12 @@ ppm init
 
 **Options:**
 
--   `-d`: Enable default configuration.
+-   `-y`: Enable default configuration.
 
 **Example:**
 
 ```bash
-ppm init -d
+ppm init -y
 ```
 
 This command initializes the project using default configuration settings.

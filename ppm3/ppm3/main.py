@@ -29,7 +29,7 @@ def main() -> None:
             "init", help="Initializes a new project"
         )
         init_parser.add_argument(
-            "-y", action="store_true", help="Accept default configuration"
+            "-y", action="store_true", help="Accept default configuration without prompting"
         )
         init_parser.set_defaults(func=Init().init)
 

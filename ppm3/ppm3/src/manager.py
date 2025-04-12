@@ -207,14 +207,21 @@ if __name__ == '__main__':
 """
             )
 
-    @loading_animation(message="Creating virtual environment")
     def create_virtualenv(self) -> None:
         """
-        Create a virtual environment for the project.
+        Create a virtual environment for the project if it doesn't exist. Also install packages if specified.
         """
-        if not os.path.exists(self.virtual_env_name):
+        @loading_animation(message="Creating virtual environment")
+        def _create_virtual_environment(self) -> None:
+            """
+            Create a virtual environment if it doesn't exist.
+            """
             subprocess.run(
                 [sys.executable, "-m", "venv", self.virtual_env_name])
+            self.install_packages()
+
+        if not os.path.exists(self.virtual_env_name):
+            _create_virtual_environment(self)
 
     def generate_script(self, script: List[str]) -> str:
         """
@@ -232,10 +239,25 @@ if __name__ == '__main__':
         """
         self._run_command(
             ["python -m pip install --upgrade pip"], "Failed to upgrade pip")
+
+        if self.packages.__len__() > 0:
+            self._run_command(
+                [f"python -m pip install --no-cache-dir {' '.join(self.packages)}"],
+                "Failed to install packages"
+            )
+
+    def update_install_packages(self) -> None:
+        """
+        Install packages in the virtual environment.
+        """
         self._run_command(
-            [f"python -m pip install --no-cache-dir {' '.join(self.packages)}"],
-            "Failed to install packages"
-        )
+            ["python -m pip install --upgrade pip"], "Failed to upgrade pip")
+
+        if self.packages.__len__() > 0:
+            self._run_command(
+                [f"python -m pip install --no-cache-dir {' '.join(self.packages)} --force"],
+                "Failed to install packages"
+            )
 
     def uninstall_packages(self) -> None:
         """
@@ -270,6 +292,7 @@ if __name__ == '__main__':
                                 capture_output=True, text=True)
         self.config["packages"] = [line.strip()
                                    for line in result.stdout.splitlines() if line.strip()]
+        print("")
 
     @loading_animation(message="Creating configuration file")
     def create_write_configuration_file(self) -> None:
@@ -282,7 +305,7 @@ if __name__ == '__main__':
         with open(self.meta_data_file_name, "w") as file:
             self.yaml.dump(self.config, file)
 
-        print(f"\n\n{self.meta_data_file_name} file is created.", end="")
+        print(f"\n{self.meta_data_file_name} file is created.")
 
     def configure_project_by_user_input(self) -> None:
         """
@@ -312,6 +335,7 @@ It only covers the most common items and meta data of the project.
             self.git_init = True
             self.git_repository = self.get_user_input(
                 "github repository name", self.git_repository)
+            print("")
 
     def console_write_instructions(self) -> None:
         """
@@ -324,6 +348,11 @@ It only covers the most common items and meta data of the project.
         print("To install the dependencies, use the command 'ppm install'\n")
         print("To uninstall the dependencies, use the command 'ppm uninstall'\n")
         print("To run the project, use the command 'ppm run'\n")
+        print("To list the dependencies, use the command 'ppm list'\n")
+        print("To create requirements.txt for the dependencies, use the command 'ppm freeze'\n")
+        print("To check for outdated packages, use the command 'ppm outdated'\n")
+        print("To update the outdated packages, use the command 'ppm update'\n")
+        print("'ppm' command will help you to show the available commands.\n")
         print(
             f"main.py file is created in src folder ({self.main_file_path}). You can start coding in main.py file.\n")
         print("Happy coding!")
@@ -367,4 +396,4 @@ It only covers the most common items and meta data of the project.
 
         outputs = result.stdout.splitlines()[2:]
         self.packages = [
-            f"{line.split()[0]}=={line.split()[1]}" for line in outputs]
+            f"{line.split()[0]}=={line.split()[2]}" for line in outputs]
