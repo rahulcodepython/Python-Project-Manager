@@ -24,9 +24,9 @@ setup(
     python_requires=">=3.6",
     include_package_data=True,
     install_requires=[
-        "inquirer == 3.4.0",
-        "setuptools == 75.5.0",
-        "colorama == 0.4.6",
+        "inquirer==3.4.0",
+        "setuptools==78.1.0",
+        "ruamel.yaml==0.18.10",
     ],
     entry_points={
         "console_scripts": [

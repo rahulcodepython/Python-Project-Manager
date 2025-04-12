@@ -1,4 +1,4 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: ppm3
 Version: 1.0
 Summary: A Python project manager.
@@ -16,7 +16,18 @@ Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 Requires-Dist: inquirer==3.4.0
 Requires-Dist: setuptools==75.5.0
-Requires-Dist: colorama==0.4.6
+Requires-Dist: ruamel.yaml==0.18.10
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
 
 # ppm Package
 

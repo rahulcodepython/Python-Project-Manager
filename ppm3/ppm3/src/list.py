@@ -1,20 +1,16 @@
 from .decorators import operation_termination
-from .default import PPM_Default
+from .manager import Manager
 import subprocess
 
 
 class List:
     def __init__(self):
-        self.ppm = PPM_Default()
+        self.manager = Manager()
 
     @operation_termination
     def list(self):
-        self.ppm.check_configuration_file_file()
-        self.ppm.create_virtualenv()
-        try:
-            subprocess.run(
-                self.ppm.generate_script(["pip list"]),
-                shell=True,
-            )
-        except (KeyboardInterrupt, SystemExit):
-            ...
+        self.manager.check_file_existence()
+        subprocess.run(
+            self.manager.generate_script(["python -m pip list"]),
+            shell=True,
+        )

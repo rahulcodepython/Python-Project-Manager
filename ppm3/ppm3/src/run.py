@@ -1,58 +1,22 @@
-from .decorators import operation_termination
+from .manager import Manager
 import subprocess
-import sys
-from .default import PPM_Default
 
 
 class Run:
-    def __init__(self) -> None:
-        self.ppm = PPM_Default()
-        self.script = ""
+    def __init__(self):
+        self.manager = Manager()
 
-    def create_script(self, script):
-        run_script = ""
+    def run(self, scripts) -> None:
+        self.manager.check_file_existence()
 
-        # Read the configuration file
-        with open(self.ppm.meta_data_file_name, "r") as file:
-            contents = file.readlines()
-            try:
-                command_start = contents.index("[command]\n") + 1
-                for line_content in contents[command_start:]:
-                    if line_content == "\n":
-                        break  # Stop at an empty line
+        command = self.manager.config["commands"].get(
+            "run" if not scripts else scripts[0], None)
+        script = self.manager.generate_script([command])
 
-                    key, value = line_content.strip().split(" = ")
-                    command_value = value.replace('"', "").strip()
+        result = subprocess.run(
+            script, shell=True, capture_output=True, text=True)
 
-                    if len(script) == 0 and key == "run":
-                        if len(command_value) == 0:
-                            print("No command to run")
-                            raise ValueError()
-                        run_script = command_value
-                        break
-                    elif script and key == script[0]:
-                        if len(command_value) == 0:
-                            print("No command to run")
-                            raise ValueError()
-                        run_script = command_value
-                        break
-                else:
-                    sys.exit(0)
-
-            except ValueError:
-                sys.exit(0)
-
-        self.script = run_script
-
-    @operation_termination
-    def interpret_code(self):
-        try:
-            subprocess.run(self.script, shell=True)
-        except (KeyboardInterrupt, SystemExit):
-            ...
-
-    @operation_termination
-    def run(self, script):
-        self.ppm.check_configuration_file_file()
-        self.create_script(script)
-        self.interpret_code()
+        if result.returncode == 0:
+            print(result.stdout, end="")
+        else:
+            print(result.stderr, end="")

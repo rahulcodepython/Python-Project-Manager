@@ -1,66 +1,21 @@
 from .decorators import operation_termination
-from .default import PPM_Default
-import subprocess
+from .manager import Manager
+import sys
 
 
 class Uninstall:
-    def __init__(self):
-        self.ppm = PPM_Default()
-
-    def parse_preinstalled_packages(self) -> None:
-        package_name = "pipdeptree"
-
-        result = subprocess.run(
-            ["pipdeptree", "-p", package_name, "--warn", "silence"],
-            capture_output=True,
-            text=True,
-        )
-
-        exclude_packages = set()
-        for line in result.stdout.splitlines():
-            if " - " in line:
-                dep = line.split("==")[0].strip(" -")
-                exclude_packages.add(dep.split(" ")[0])
-        exclude_packages.add(package_name)
-
-        result = subprocess.run(["pip", "freeze"], capture_output=True, text=True)
-        all_packages = set(line.split("==")[0] for line in result.stdout.splitlines())
-        self.ppm.packages = list(all_packages - exclude_packages)
-
-    def parse_package_dependency_tree(self, packages_name) -> None:
-        dependencies = set()
-
-        for package_name in packages_name:
-            result = subprocess.run(
-                ["pipdeptree", "-p", package_name, "--warn", "silence"],
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-            )
-
-            for line in result.stdout.splitlines():
-                if ("installed") in line:
-                    dependencies.add(line.split(" ")[1])
-            dependencies.add(package_name)
-
-        self.ppm.packages = list(dependencies)
+    def __init__(self) -> None:
+        self.manager = Manager()
 
     @operation_termination
-    def uninstall(self, with_dependencies, *args) -> None:
-        self.ppm.animation.start("Uninstalling packages")
-        self.ppm.check_configuration_file_file()
-        if len(args[0]) == 0:
-            self.parse_preinstalled_packages()
-        else:
-            if with_dependencies:
-                self.parse_package_dependency_tree(args[0])
-            else:
-                self.ppm.packages = args[0]
-        self.ppm.uninstall_packages()
-        if len(args[0]) == 0:
-            self.ppm.overwrite_configuration_file_remove_dependencies()
-        else:
-            self.ppm.overwrite_configuration_file()
-        self.ppm.parse_installed_package_dependency()
-        self.ppm.overwrite_configuration_file()
-        self.ppm.animation.stop("Packages uninstalled successfully")
+    def uninstall(self, packages: list[str]) -> None:
+        self.manager.check_file_existence()
+
+        if packages.__len__() == 0:
+            print("No packages provided. Please provide a list of packages to install.")
+            sys.exit(0)
+
+        self.manager.packages = packages
+        self.manager.uninstall_packages()
+        self.manager.get_pip_packages()
+        self.manager.create_write_configuration_file()

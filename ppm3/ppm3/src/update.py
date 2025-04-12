@@ -1,19 +1,15 @@
-from .decorators import operation_termination
 from .manager import Manager
-import sys
 
 
-class Install:
-    def __init__(self) -> None:
+class Update:
+    def __init__(self):
         self.manager = Manager()
 
-    @operation_termination
-    def install(self, packages: list[str] = None) -> None:
+    def update(self, packages):
         self.manager.check_file_existence()
 
         if packages is None:
-            self.manager.create_virtualenv()
-            self.manager.packages = self.manager.config.get("packages", [])
+            self.manager.parse_outdated_packages()
         else:
             self.manager.packages = packages
 

@@ -1,8 +1,10 @@
 import argparse
-from .src import Init, Install, Uninstall, Run, AddEnv, List, Freeze
+# from .src import Init, Install, Uninstall, Run, AddEnv, List, Freeze
+from .src import Init, List, Freeze, Install, Run, Outdated, Update, Uninstall
+from .src.constraints import VERSION
 
 # Define the version
-VERSION = "0.0.9"
+version = VERSION
 
 
 def main():
@@ -11,16 +13,17 @@ def main():
         "-V",
         "--version",
         action="version",
-        version=f"%(prog)s {VERSION}",
+        version=f"The version of ppm is {version}",
         help="show the version of ppm and exit",
     )
 
     subparsers = parser.add_subparsers(dest="command")
 
     # Init command with -d flag
-    init_parser = subparsers.add_parser("init", help="initializes a new project")
+    init_parser = subparsers.add_parser(
+        "init", help="Initializes a new project")
     init_parser.add_argument(
-        "-d", action="store_true", help="enable default configuration"
+        "-y", action="store_true", help="Accept default configuration"
     )
     init_parser.set_defaults(func=Init().init)
 
@@ -28,30 +31,23 @@ def main():
     install_parser = subparsers.add_parser(
         "install", help="install packages in the project"
     )
-    install_parser.add_argument("packages", nargs="*", help="Packages to install")
+    install_parser.add_argument(
+        "packages", nargs="*", help="Packages to install")
     install_parser.set_defaults(func=Install().install)
 
     # Uninstall command with multiple arguments support
     uninstall_parser = subparsers.add_parser(
         "uninstall", help="install packages in the project"
     )
-    uninstall_parser.add_argument("packages", nargs="*", help="Packages to uninstall")
     uninstall_parser.add_argument(
-        "-d", action="store_true", help="uninstall packages with dependencies"
-    )
+        "packages", nargs="*", help="Packages to uninstall")
     uninstall_parser.set_defaults(func=Uninstall().uninstall)
 
     # Run command to run the code
     run_parser = subparsers.add_parser("run", help="run the project")
-    run_parser.add_argument("script", nargs="*", help="Script to run in the project")
+    run_parser.add_argument("script", nargs="*",
+                            help="Script to run in the project")
     run_parser.set_defaults(func=Run().run)
-
-    # Add_Environment command to add environment file
-    add_env_parser = subparsers.add_parser("add_env", help="add environment file")
-    add_env_parser.add_argument(
-        "values", nargs="*", help="Values to add in environment file"
-    )
-    add_env_parser.set_defaults(func=AddEnv().add_env)
 
     list_parser = subparsers.add_parser("list", help="list all the packages")
     list_parser.set_defaults(func=List().list)
@@ -61,21 +57,30 @@ def main():
     )
     freeze_parser.set_defaults(func=Freeze().freeze)
 
+    outdated_parser = subparsers.add_parser(
+        "outdated", help="Show outdated packages")
+    outdated_parser.set_defaults(func=Outdated().outdated)
+
+    update_parser = subparsers.add_parser(
+        "update", help="update packages in the project"
+    )
+    update_parser.add_argument(
+        "packages", nargs="*", help="Packages to update")
+    update_parser.set_defaults(func=Update().update)
+
     args = parser.parse_args()
 
     if args.command == "init":
-        args.func(args.d)  # Pass the `-d` argument as `True` or `False`
+        args.func(args.y)  # Pass the `-d` argument as `True` or `False`
     elif args.command == "install":
         args.func(args.packages)
+    elif args.command == "update":
+        args.func(args.packages)
     elif args.command == "uninstall":
-        args.func(args.d, args.packages)
-    elif args.command == "add_env":
-        args.func(args.values)
+        args.func(args.packages)
     elif args.command == "run":
         args.func(args.script)
-    elif args.command == "list":
-        args.func()
-    elif args.command == "freeze":
+    elif args.command == "list" or args.command == "freeze" or args.command == "outdated":
         args.func()
     else:
         parser.print_help()
