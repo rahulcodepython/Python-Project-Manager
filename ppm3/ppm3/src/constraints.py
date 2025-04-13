@@ -3,7 +3,7 @@ This module defines constants used across the project.
 """
 
 # Version of the application
-VERSION: str = "1.1"
+VERSION: str = "1.2"
 
 # Default description for the project
 DEFAULT_DESCRIPTION: str = ""

@@ -397,3 +397,34 @@ It only covers the most common items and meta data of the project.
         outputs = result.stdout.splitlines()[2:]
         self.packages = [
             f"{line.split()[0]}=={line.split()[2]}" for line in outputs]
+
+    def initialize_git(self) -> None:
+        """
+        Initialize a git repository and add the remote origin.
+        """
+        if not self.git_init:
+            return
+
+        if os.path.exists(".git"):
+            print("Git repository already exists.\n")
+            return
+
+        # Check if Git is installed
+        try:
+            subprocess.run(["git", "--version"], check=True,
+                           capture_output=True, text=True)
+        except FileNotFoundError:
+            print("Git is not installed on this system. Please install Git to proceed.\n")
+            sys.exit(1)
+
+        print("Initializing git repository...\n")
+        subprocess.run(["git", "init"])
+        subprocess.run(["git", "remote", "add", "origin",
+                        self.git_repository])
+        print(
+            f"Git repository initialized with remote origin {self.git_repository}\n")
+        subprocess.run(["git", "add", "."])
+        subprocess.run(["git", "commit", "-m", "Initial commit"])
+        print("Initial commit made.\n")
+        subprocess.run(["git", "branch", "-M", "main"])
+        print("Main branch created.\n")
