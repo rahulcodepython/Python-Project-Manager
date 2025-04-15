@@ -1,4 +1,3 @@
-import sys
 from typing import List
 from .decorators import operation_termination
 from .manager import Manager
@@ -11,7 +10,7 @@ class Install:
 
     def __init__(self) -> None:
         """
-        Initialize the Install class with a Manager instance.
+        Initialize the class named 'Install' with a Manager instance.
         """
         self.manager: Manager = Manager()
 

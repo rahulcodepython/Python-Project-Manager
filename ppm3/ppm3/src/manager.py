@@ -49,11 +49,11 @@ class Manager:
             else os.path.join(self.virtual_env_name, "bin", "activate")
         )
         self.packages: List[str] = []
-        self.config: Dict = self._initialize_config()
+        self.config: Dict = self.initialize_config()
         self.animation: Loading = Loading()
         self.yaml: YAML = YAML()
 
-    def _initialize_config(self) -> Dict:
+    def initialize_config(self) -> Dict:
         """
         Initialize the default configuration dictionary.
         """
@@ -132,7 +132,8 @@ class Manager:
         self.environment_variable_name = info["environment_variable"]["environment_variable_name"]
         self.config = info
 
-    def get_user_input(self, prompt: str, default: str) -> str:
+    @staticmethod
+    def get_user_input(prompt: str, default: str) -> str:
         """
         Get user input with a default value.
         """
@@ -165,7 +166,8 @@ class Manager:
         with open(path, "w") as file:
             file.write("")
 
-    def create_folders(self, path: str) -> None:
+    @staticmethod
+    def create_folders(path: str) -> None:
         """
         Create folders recursively based on the given path.
         """
@@ -213,7 +215,7 @@ if __name__ == '__main__':
         Create a virtual environment for the project if it doesn't exist. Also install packages if specified.
         """
         @loading_animation(message="Creating virtual environment")
-        def _create_virtual_environment(self) -> None:
+        def _create_virtual_environment() -> None:
             """
             Create a virtual environment if it doesn't exist.
             """
@@ -423,7 +425,7 @@ It only covers the most common items and meta data of the project.
         print("Initializing git repository...\n")
         subprocess.run(["git", "init"])
 
-        if self.git_repository.__len__ > 0:
+        if len(self.git_repository) > 0:
             subprocess.run(["git", "remote", "add", "origin",
                             self.git_repository])
             print(

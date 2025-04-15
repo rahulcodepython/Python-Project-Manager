@@ -41,13 +41,12 @@ def loading_animation(message: str = "Loading") -> Callable:
                 # Start loading animation
                 loading.start(message=message)
                 result = func(*args, **kwargs)
+                loading.stop()
                 return result
             except Exception as e:
+                loading.stop()
                 print("\nAn error occurred:", e)
                 sys.exit(0)
-            finally:
-                # Ensure loading animation stops in all cases
-                loading.stop()
 
         return wrapper
 

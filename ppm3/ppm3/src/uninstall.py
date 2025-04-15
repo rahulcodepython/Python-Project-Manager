@@ -11,7 +11,7 @@ class Uninstall:
 
     def __init__(self) -> None:
         """
-        Initializes the Uninstall class with a Manager instance.
+        Initializes the class named 'Uninstall' with a Manager instance.
         """
         self.manager: Manager = Manager()
 

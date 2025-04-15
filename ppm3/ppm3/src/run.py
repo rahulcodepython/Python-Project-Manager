@@ -52,7 +52,8 @@ class Run:
             "run" if not scripts else scripts[0], None
         )
 
-    def _execute_script(self, script: str) -> None:
+    @staticmethod
+    def _execute_script(script: str) -> None:
         """
         Executes the given script and prints the output or error.
 

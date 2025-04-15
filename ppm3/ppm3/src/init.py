@@ -31,7 +31,7 @@ class Init:
         else:
             self.manager.configure_project_by_user_input()
 
-        self.manager.config = self.manager._initialize_config()
+        self.manager.config = self.manager.initialize_config()
         self._setup_project()
 
     def _handle_existing_configuration(self) -> None:
@@ -39,9 +39,9 @@ class Init:
         Handles the case where a configuration file already exists.
         """
         print(
-            f"{self.meta_data_file_name} already exists.\n"
+            f"{self.manager.meta_data_file_name} already exists.\n"
             f"PPM is initialized in your project.\n"
-            f"To reconfigure PPM, you need to remove the {self.meta_data_file_name} file."
+            f"To reconfigure PPM, you need to remove the {self.manager.meta_data_file_name} file."
         )
         sys.exit(0)
 
