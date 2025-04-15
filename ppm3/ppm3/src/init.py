@@ -49,11 +49,12 @@ class Init:
         """
         Sets up the project by creating necessary files, virtual environment, and installing packages.
         """
+
         self.manager.create_env_file()
         self.manager.create_project_folder_files()
         self.manager.create_virtualenv()
         self.manager.install_packages()
         self.manager.get_pip_packages()
-        self.manager.initialize_git()
         self.manager.create_write_configuration_file()
+        self.manager.initialize_git()
         self.manager.console_write_instructions()  # Prints instructions to the console

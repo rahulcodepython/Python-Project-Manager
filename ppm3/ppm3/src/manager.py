@@ -176,6 +176,7 @@ class Manager:
         Create the source folder and main file for the project.
         """
         self.create_folders(self.source_folder_path)
+        print(self.main_file_path)
 
         if os.path.exists(self.main_file_path):
             agree_to_override_main_file = self.choice_based_question(
@@ -323,6 +324,8 @@ It only covers the most common items and meta data of the project.
         self.description = self.get_user_input("description", self.description)
         self.main_file_name = self.get_user_input(
             "entry point", self.main_file_name)
+        self.main_file_path: str = os.path.join(
+            self.source_folder_path, self.main_file_name)
         self.author = self.get_user_input("author", self.author)
         self.license = self.get_user_input("license", self.license)
 
@@ -419,10 +422,12 @@ It only covers the most common items and meta data of the project.
 
         print("Initializing git repository...\n")
         subprocess.run(["git", "init"])
-        subprocess.run(["git", "remote", "add", "origin",
-                        self.git_repository])
-        print(
-            f"Git repository initialized with remote origin {self.git_repository}\n")
+
+        if self.git_repository.__len__ > 0:
+            subprocess.run(["git", "remote", "add", "origin",
+                            self.git_repository])
+            print(
+                f"Git repository initialized with remote origin {self.git_repository}\n")
         subprocess.run(["git", "add", "."])
         subprocess.run(["git", "commit", "-m", "Initial commit"])
         print("Initial commit made.\n")
